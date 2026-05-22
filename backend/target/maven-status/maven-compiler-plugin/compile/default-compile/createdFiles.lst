@@ -1,5 +1,6 @@
 com\gocomet\auction\dto\Dto$RfqListingResponse.class
 com\gocomet\auction\repository\AuctionConfigRepository.class
+com\gocomet\auction\dto\Dto$RfqWithBuyer.class
 com\gocomet\auction\dto\Dto$RfqDetailResponse.class
 com\gocomet\auction\service\AuctionEngineService.class
 com\gocomet\auction\controller\BidController.class
