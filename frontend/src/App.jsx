@@ -8,14 +8,16 @@ import SubmitBid from './pages/SubmitBid';
 function App() {
     return (
         <BrowserRouter>
-            <Navbar />
-            <div style={{ padding: '20px' }}>
-                <Routes>
-                    <Route path="/" element={<AuctionListing />} />
-                    <Route path="/auction/:id" element={<AuctionDetails />} />
-                    <Route path="/create" element={<CreateRFQ />} />
-                    <Route path="/bid/:rfq_id" element={<SubmitBid />} />
-                </Routes>
+            <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+                <Navbar />
+                <main style={{ flex: 1, padding: '32px', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+                    <Routes>
+                        <Route path="/" element={<AuctionListing />} />
+                        <Route path="/auction/:id" element={<AuctionDetails />} />
+                        <Route path="/create" element={<CreateRFQ />} />
+                        <Route path="/bid/:rfq_id" element={<SubmitBid />} />
+                    </Routes>
+                </main>
             </div>
         </BrowserRouter>
     );

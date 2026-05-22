@@ -1,63 +1,75 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 function Navbar() {
+    const location = useLocation();
+    
     return (
         <nav style={{
-            backgroundColor: '#1a1a2e',
-            padding: '15px 30px',
+            backgroundColor: 'var(--bg-surface)',
+            borderBottom: '1px solid var(--border-color)',
+            padding: '0 32px',
+            height: '64px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderRadius: '12px'
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: 'var(--shadow-sm)'
         }}>
 
             {/* Logo */}
             <Link to="/" style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "10px",
-                color: '#e94560',
-                fontSize: '20px',
-                fontWeight: 'bold',
-                textDecoration: 'none'
+                gap: "12px",
+                color: 'var(--text-primary)',
+                fontSize: '18px',
+                fontWeight: '700',
+                textDecoration: 'none',
+                letterSpacing: '-0.02em'
             }}>
-                <img
-                    width="40"
-                    height="40"
-                    src="https://img.icons8.com/external-flaticons-flat-flat-icons/64/external-auction-auction-house-flaticons-flat-flat-icons-2.png"
-                    alt="RFQ"
-                />
+                <div style={{
+                    backgroundColor: 'var(--color-action)',
+                    borderRadius: '8px',
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontWeight: 'bold'
+                }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                </div>
                 <span>RFQ Auction</span>
             </Link>
 
             {/* Right Menu */}
             <div style={{
                 display: 'flex',
-                gap: '25px',
+                gap: '32px',
                 alignItems: 'center'
             }}>
 
                 <Link to="/" style={{
-                    color: '#fff',
-                    textDecoration: 'none'
+                    color: location.pathname === '/' ? 'var(--color-action)' : 'var(--text-secondary)',
+                    fontWeight: location.pathname === '/' ? '600' : '500',
+                    textDecoration: 'none',
+                    fontSize: '14px',
+                    transition: 'color 0.2s'
                 }}>
                     Auctions
                 </Link>
 
-                <Link to="/create" style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    color: '#fff',
-                    textDecoration: 'none'
-                }}>
-                    <img
-                        width="20"
-                        height="20"
-                        src="https://img.icons8.com/ios-glyphs/30/FFFFFF/plus--v1.png"
-                        alt="Create"
-                    />
-                    <span>Create RFQ</span>
+                <Link to="/create" className="btn btn-primary" style={{ textDecoration: 'none' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Create RFQ
                 </Link>
 
             </div>

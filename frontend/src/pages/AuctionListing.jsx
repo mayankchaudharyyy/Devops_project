@@ -25,27 +25,34 @@ function AuctionListing() {
         return () => clearInterval(interval);
     }, []);
 
-    function getStatusStyle(status) {
+    function getStatusClass(status) {
         switch (status) {
             case 'active':
-                return { backgroundColor: '#d4edda', color: '#155724' };
+                return 'badge badge-active';
             case 'closed':
-                return { backgroundColor: '#d6d8db', color: '#383d41' };
+                return 'badge badge-closed';
             case 'force_closed':
-                return { backgroundColor: '#f8d7da', color: '#721c24' };
+                return 'badge badge-force_closed';
             case 'draft':
-                return { backgroundColor: '#fff3cd', color: '#856404' };
+                return 'badge badge-draft';
             default:
-                return {};
+                return 'badge badge-closed';
         }
     }
 
     function formatDate(dateStr) {
-        if (!dateStr) return 'N/A';
-        return new Date(dateStr).toLocaleString();
+        if (!dateStr) return '—';
+        return new Date(dateStr).toLocaleString([], {
+            month: 'short', day: 'numeric', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
     }
 
-    if (loading) return <div>Loading auctions...</div>;
+    if (loading) return (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '60px', color: 'var(--text-secondary)' }}>
+            Loading auctions...
+        </div>
+    );
 
     return (
         <div>
@@ -53,149 +60,106 @@ function AuctionListing() {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: '20px'
+                marginBottom: '24px'
             }}>
-               <h2 style={{
-  display: "flex",
-  alignItems: "center",
-  gap: "8px"
-}}>
-  <img
-    width="25"
-    height="25"
-    src="https://img.icons8.com/stickers/100/toggle-on.png"
-    alt="Active"
-  />
-  <span>Active Auction</span>
-</h2>
-                <button
-                    onClick={() => navigate('/create')}
-                    style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#e94560',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontSize: '14px'
-                    }}
-                >
-                    + Create RFQ
+                <h2 style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: '24px' }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-action)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                    Active Auctions
+                </h2>
+                <button onClick={() => navigate('/create')} className="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Create RFQ
                 </button>
             </div>
 
             {auctions.length === 0 ? (
-                <div style={{
-                    textAlign: 'center',
-                    padding: '60px',
-                    color: '#888'
-                }}>
-                    No auctions found. Create your first RFQ!
+                <div className="card" style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-secondary)' }}>
+                    <div style={{ marginBottom: '16px' }}>
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <p style={{ margin: 0, fontSize: '16px', fontWeight: '500' }}>No auctions found</p>
+                    <p style={{ margin: '8px 0 0', fontSize: '14px' }}>Create your first RFQ to get started!</p>
                 </div>
             ) : (
-                <table style={{
-                    width: '100%',
-                    borderCollapse: 'collapse',
-                    backgroundColor: '#fff',
-                    borderRadius: '8px',
-                    overflow: 'hidden',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                }}>
-                    <thead>
-                        <tr style={{ backgroundColor: '#1a1a2e', color: '#fff' }}>
-                            <th style={thStyle}>Reference ID</th>
-                            <th style={thStyle}>RFQ Name</th>
-                            <th style={thStyle}>Lowest Bid (₹)</th>
-                            <th style={thStyle}>Total Bids</th>
-                            <th style={thStyle}>Bid Close Time</th>
-                            <th style={thStyle}>Forced Close Time</th>
-                            <th style={thStyle}>Status</th>
-                            <th style={thStyle}>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {auctions.map((auction, index) => (
-                            <tr
-                                key={auction.id}
-                                style={{
-                                    backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#fff'
-                                }}
-                            >
-                                <td style={tdStyle}>{auction.reference_id}</td>
-                                <td style={tdStyle}>{auction.name}</td>
-                                <td style={tdStyle}>
-                                    {auction.current_lowest_bid
-                                        ? `₹${Number(auction.current_lowest_bid).toLocaleString()}`
-                                        : '—'}
-                                </td>
-                                <td style={{ ...tdStyle, textAlign: 'center' }}>
-                                    {auction.total_bids}
-                                </td>
-                                <td style={tdStyle}>{formatDate(auction.bid_close_time)}</td>
-                                <td style={tdStyle}>{formatDate(auction.forced_close_time)}</td>
-                                <td style={tdStyle}>
-                                    <span style={{
-                                        padding: '4px 10px',
-                                        borderRadius: '20px',
-                                        fontSize: '12px',
-                                        fontWeight: 'bold',
-                                        textTransform: 'uppercase',
-                                        ...getStatusStyle(auction.status)
-                                    }}>
-                                        {auction.status}
-                                    </span>
-                                </td>
-                                <td style={tdStyle}>
-                                    <button
-                                        onClick={() => navigate(`/auction/${auction.id}`)}
-                                        style={{
-                                            padding: '6px 14px',
-                                            backgroundColor: '#1a1a2e',
-                                            color: '#fff',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer',
-                                            marginRight: '6px'
-                                        }}
-                                    >
-                                        View
-                                    </button>
-                                    {auction.status === 'active' && (
-                                        <button
-                                            onClick={() => navigate(`/bid/${auction.id}`)}
-                                            style={{
-                                                padding: '6px 14px',
-                                                backgroundColor: '#e94560',
-                                                color: '#fff',
-                                                border: 'none',
-                                                borderRadius: '4px',
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            Bid
-                                        </button>
-                                    )}
-                                </td>
+                <div className="table-container">
+                    <table className="saas-table">
+                        <thead>
+                            <tr>
+                                <th>Reference ID</th>
+                                <th>RFQ Name</th>
+                                <th>Lowest Bid (₹)</th>
+                                <th style={{ textAlign: 'center' }}>Total Bids</th>
+                                <th>Bid Close Time</th>
+                                <th>Status</th>
+                                <th style={{ textAlign: 'right' }}>Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {auctions.map((auction) => (
+                                <tr key={auction.id}>
+                                    <td style={{ fontWeight: '500', color: 'var(--color-action)' }}>{auction.reference_id}</td>
+                                    <td style={{ fontWeight: '500' }}>{auction.name}</td>
+                                    <td>
+                                        {auction.current_lowest_bid
+                                            ? <span style={{ fontWeight: '600' }}>₹{Number(auction.current_lowest_bid).toLocaleString()}</span>
+                                            : <span style={{ color: 'var(--text-tertiary)' }}>—</span>}
+                                    </td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        <span style={{
+                                            backgroundColor: '#f1f5f9',
+                                            padding: '4px 10px',
+                                            borderRadius: '12px',
+                                            fontSize: '13px',
+                                            fontWeight: '600',
+                                            color: 'var(--text-secondary)'
+                                        }}>
+                                            {auction.total_bids}
+                                        </span>
+                                    </td>
+                                    <td>{formatDate(auction.bid_close_time)}</td>
+                                    <td>
+                                        <span className={getStatusClass(auction.status)}>
+                                            {auction.status.replace('_', ' ')}
+                                        </span>
+                                    </td>
+                                    <td style={{ textAlign: 'right' }}>
+                                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                            <button
+                                                onClick={() => navigate(`/auction/${auction.id}`)}
+                                                className="btn"
+                                                style={{ backgroundColor: '#f1f5f9', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
+                                            >
+                                                View
+                                            </button>
+                                            {auction.status === 'active' && (
+                                                <button
+                                                    onClick={() => navigate(`/bid/${auction.id}`)}
+                                                    className="btn btn-primary"
+                                                >
+                                                    Bid
+                                                </button>
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             )}
         </div>
     );
 }
-
-const thStyle = {
-    padding: '14px 16px',
-    textAlign: 'left',
-    fontWeight: '600',
-    fontSize: '13px'
-};
-
-const tdStyle = {
-    padding: '12px 16px',
-    fontSize: '14px',
-    borderBottom: '1px solid #eee'
-};
 
 export default AuctionListing;
